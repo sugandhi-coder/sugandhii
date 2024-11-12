@@ -1,0 +1,145 @@
+Topics
+===
+1-Joins with 3 Tables (Also asked in Interview Questions)
+2-How to find the 1st Highest Salary.
+3-How to find the 2nd Highest Salary.
+4-How to find the nth Highest Salary.(Also asked in Interview Questions)
+5-Interview Practical Question
+=============================================
+
+--Joins with 3 Tables
+
+Create Table Departments (DepartmentID int,DepartmentName varchar(max))
+Create Table Genders(GenderID int,Gender varchar(max))
+Create Table Employees1 (EmployeeID int,EmployeeName varchar(max),DepartmentID int,GenderID int)
+
+Select  from Employees1
+Select  from Departments
+Select  from Genders
+
+Insert into Departments values (1,'IT'),(2,'HR'),(3,'Payroll')
+insert into Genders values (1,'Male'),(2,'Female')
+insert into Employees1 values (1,'Mark',1,1),(2,'John',1,1),(3,'Mike',2,1),
+(4,'Mary',2,2),(5,'Stacy',3,2),(6,'Valarie',3,2)
+
+---Solution
+Select EmployeeName,DepartmentName,Gender from Employees1
+join Departments on Employees1.DepartmentID=Departments.DepartmentID
+join Genders on Employees1.GenderID=Genders.GenderID
+
+
+Select Employees1.EmployeeName,Departments.DepartmentName,Genders.Gender from Employees1
+join Departments on Employees1.DepartmentID=Departments.DepartmentID
+join Genders on Employees1.GenderID=Genders.GenderID
+
+2-How to find the 1st Highest Salary.
+3-How to find the 2nd Highest Salary.
+4-How to find the nth Highesht Salary.(Also asked in Interview Questions)
+Create Table Employees2 (ID int, FirstName varchar(max),LastName varchar(max),Gender Varchar(max),
+Salary int)
+
+--Solution
+Select  from Employees2
+
+insert into Employees2 values (1,'Ben','Hoskins','Male',70000),(2,'Mark','Hastings','Male',60000),
+(3,'Steve','Pound','Male',45000),(4,'Ken','Hoskins','Male',70000),(5,'Phillip','Peter','Male',45000),
+(6,'Mary','Lambeth','Female',30000),(7,'Sara','Vikings','Female',35000),
+(8,'John','Stanmore','Male',80000)
+
+Select Max(Salary) from Employees2
+
+Select Max(Salary) from Employees2
+where Salary(Select Max(Salary) from Employees2)
+
+update Employees2 set Salary=90000 where ID=7
+
+--To find the nth Highest Salary using Sub-Query
+
+Select Top 1 Salary
+from (Select Distinct Top N Salary from Employees2
+order by Salary desc) Result
+order by Salary 
+
+
+Select Top 1 Salary
+from (Select Distinct Top 1 Salary from Employees2
+order by Salary desc) Result
+order by Salary
+
+Select Top 1 Salary
+from (Select Distinct Top 2 Salary from Employees2
+order by Salary desc) Result
+order by Salary
+
+Select Top 2 Salary
+from (Select distinct Top 3 Salary from Employees2
+order by Salary desc) Result
+order by Salary
+
+
+--To find the nth Highest Salary using CTE
+
+
+with Result As
+(
+Select Salary, DENSE_RANK() over  (order by Salary Desc) As DenseRank
+from Employees2
+)
+Select Top 1 Salary from Result where DenseRank=N 
+
+with Result As
+(
+Select Salary, DENSE_RANK() over  (order by Salary Desc) As DenseRank
+from Employees2
+)
+Select Top 1 Salary from Result where DenseRank=1
+
+
+with Result As
+(
+Select Salary, DENSE_RANK() over  (order by Salary Desc) As DenseRank
+from Employees2
+)
+Select Top 1 Salary from Result where DenseRank=2
+
+
+with Result As
+(
+Select Salary, DENSE_RANK() over  (order by Salary Desc) As DenseRank
+from Employees2
+)
+Select Top 1 Salary from Result where DenseRank=3
+
+---Interview Question
+
+--Qs Change the CityName from Delhi to U.P and All U.P City to Delhi
+--Note Please provide the Solution in a single query.
+
+Create Table Employees3(ID int,EmpName varchar(max),City varchar(max))
+Select  from Employees3
+
+--Solution
+
+Begin Tran
+Update Employees3
+set City=
+Case
+when City='Delhi' then 'U.P'
+when City='U.P' then 'Delhi'
+else City
+end
+
+--Message(10 row(s) affected)
+
+begin tran
+Update Employees3
+set City=
+Case
+when City='Delhi' then 'U.P'
+when City='U.P' then 'Delhi'
+end
+where City in ('Delhi','U.P')
+
+--Message(7 row(s) affected)
+
+rollback
